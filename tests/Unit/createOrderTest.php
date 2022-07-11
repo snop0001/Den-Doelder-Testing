@@ -48,7 +48,7 @@ class createOrderTest extends TestCase
     {
         $this->seed('PalletSeeder');
         $this->seed('MachineSeeder');
-        $this->seed('userSeeder');
+        $this->seed('UserSeeder');
     }
 
     /**
