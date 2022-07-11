@@ -16,7 +16,7 @@ use App\Providers\ReadyForProductionPending;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class createOrder extends TestCase
+class createOrderTest extends TestCase
 {
     use RefreshDatabase;
 
