@@ -275,7 +275,7 @@ class OrderController extends Controller
     public function update(Request $request, $order)
     {
         $order=Order::where('id',$order)->first();
-        $order->update($request->all());
+        $order->update($this->validateOrder($request));
         return redirect(route('orders.show', $order));
     }
 

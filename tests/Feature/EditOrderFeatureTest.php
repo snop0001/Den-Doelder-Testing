@@ -52,6 +52,11 @@ class EditOrderFeatureTest extends TestCase
         $route = route('orders.update',['order'=>$order]);
         $request = [
             'order_number'=>'test_update',
+            'pallet_id'=>Pallet::all()->first()->id,
+            'machine_id'=>Machine::where('id',2)->first()->id,
+            'quantity_production'=>100,
+            'site_location'=>'Axel',
+            'start_date'=>date('Y-m-d H:i:s'),
         ];
         $response= $this->put($route,$request);
         $order=Order::all()->first();
@@ -85,6 +90,7 @@ class EditOrderFeatureTest extends TestCase
             'order_number'=>null,
         ];
         $response= $this->put($route,$request);
-        $response->assertSessionHasErrors('order_number');
+        $this->followingRedirects()->put($route,$request)->assertSessionHasErrors('order_number');
+//        $response->assertSessionHasErrors('order_number');
     }
 }
