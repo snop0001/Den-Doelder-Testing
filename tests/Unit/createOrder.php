@@ -59,8 +59,9 @@ class createOrder extends TestCase
      */
     public function test_admin_hold_machine()
     {
-        //machine is set in the seeders
+        //Arrange
         $this->build_seeders();
+        //Act
         $order=Order::factory()->create([
             'order_number'=>'test_1',
             'pallet_id'=>Pallet::all()->first()->id,
@@ -68,6 +69,7 @@ class createOrder extends TestCase
             'quantity_production'=>100,
             'site_location'=>'Axel',
         ]);
+        //Assert (Then)
         $this->assertTrue($order->status==='Admin Hold');
     }
 
@@ -79,7 +81,9 @@ class createOrder extends TestCase
      */
     public function test_admin_hold_date()
     {
+        //Arange
         $this->build_seeders();
+        //Act
         $order=Order::factory()->create([
             'order_number'=>'test_1',
             'pallet_id'=>Pallet::all()->first()->id,
@@ -89,6 +93,7 @@ class createOrder extends TestCase
             'start_date'=>date('Y-m-d H:i:s'),
         ]);
         $this->build_event_Listeners();
+        //Assert (Then)
         $this->assertTrue($order->status==='Admin Hold');
     }
 
@@ -100,11 +105,14 @@ class createOrder extends TestCase
      */
     public function test_quality_check_pending()
     {
+        //Arrange
         //seeding everything needed
         $this->build_seeders();
         //adding seeding of materials for this test
         $this->seed('MaterialSeeder');
         $material=Material::all()->first();
+
+        //Act
         //getting the order we will be testing
         $order=Order::factory()->create([
             'order_number'=>'test_1',
@@ -120,6 +128,8 @@ class createOrder extends TestCase
         $this->build_event_Listeners();
         //making sure we get the order after the event listeners were called
         $order=Order::where('id',$order->id)->first();
+
+        //Assert (Then)
         //checking that the status is correct
         $this->assertTrue($order->status==='Quality Check Pending');
     }
@@ -131,11 +141,14 @@ class createOrder extends TestCase
      */
     public function test_none_is_selected()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
         $this->seed('OrderSeeder');
+        //Act
         $order=order::isSelected();
+        //Assert (Then)
         $this->assertTrue($order===null);
     }
 
@@ -146,6 +159,7 @@ class createOrder extends TestCase
      */
     public function test_select()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
@@ -153,7 +167,9 @@ class createOrder extends TestCase
         //creating an order controller instance
         $orderController=new OrderController();
         $order=Order::all()->first();
+        //Act
         $orderController::selectOrder($order);
+        //Assert (Then)
         $this->assertTrue($order->selected===1);
     }
 
@@ -164,6 +180,7 @@ class createOrder extends TestCase
      */
     public function test_selected_route()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
@@ -171,8 +188,10 @@ class createOrder extends TestCase
         //creating an order controller instance
         $orderController=new OrderController();
         $order=Order::all()->first();
+        //Act
         $response=$orderController::selectOrder($order);
         $result= $response->isRedirect('http://localhost/orders/'.$order->id);
+        //Assert (Then)
         $this->assertTrue($result);
     }
 
@@ -184,6 +203,7 @@ class createOrder extends TestCase
      */
     public function test_select_more_than_one()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
@@ -193,9 +213,11 @@ class createOrder extends TestCase
         //setting one order to be selected
         $firstOrder=Order::all()->first();
         $orderController::selectOrder($firstOrder);
+        //Act
         //trying to set the second one to selected as well
         $secondOrder=Order::where('id',2)->first();
         $orderController::selectOrder($secondOrder);
+        //Assert (Then)
         //checking that the selected didnt change to 1 because a different order is already selected
         $this->assertFalse($secondOrder->selected===1);
     }
@@ -208,6 +230,7 @@ class createOrder extends TestCase
      */
     public function test_unselect_order_route()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
@@ -217,9 +240,11 @@ class createOrder extends TestCase
         //setting one order to be selected
         $order=Order::all()->first();
         $orderController::selectOrder($order);
+        //Act
         //unselecting the order and checking that the route will go back to orders index
         $response=$orderController::unselectOrder($order);
         $result= $response->isRedirect('http://localhost/orders');
+        //Assert (Then)
         $this->assertTrue($result);
     }
 
@@ -231,6 +256,7 @@ class createOrder extends TestCase
      */
     public function test_unselect_order()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
@@ -240,8 +266,10 @@ class createOrder extends TestCase
         //setting one order to be selected
         $order=Order::all()->first();
         $orderController::selectOrder($order);
+        //Act
         //unselecting the order and checking that the route will go back to orders index
         $orderController::unselectOrder($order);
+        //Assert (Then)
         $this->assertTrue($order->selected===0);
     }
 }

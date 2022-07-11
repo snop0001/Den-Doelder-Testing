@@ -83,9 +83,12 @@ class editOrder extends TestCase
      */
     public function test_order_just_created()
     {
+        //Arrange
         //machine is set in the seeders
         $this->build_seeders();
+        //Act
         $order=$this->create_order();
+        //Assert (Then)
         $this->assertTrue($order->status==='Quality Check Pending');
     }
 
@@ -96,14 +99,17 @@ class editOrder extends TestCase
      */
     public function test_admin_hold_date()
     {
+        //Arrange
         $this->build_seeders();
         $order=$this->create_order();
+        //Act
         $order->start_date=null;
         $order->save();
         //automatic status change
         $this->build_event_Listeners();
         //getting the same order but after the event listeners
         $order=Order::all()->first();
+        //Assert (Then)
         $this->assertTrue($order->status==='Admin Hold');
     }
 
@@ -114,8 +120,10 @@ class editOrder extends TestCase
      */
     public function test_admin_hold_machine()
     {
+        //Arrange
         $this->build_seeders();
         $order=$this->create_order();
+        //Act
         $machine=Machine::where('name','None')->first();
         $order->machine_id=$machine->id;
         $order->save();
@@ -123,6 +131,7 @@ class editOrder extends TestCase
         $this->build_event_Listeners();
         //getting the same order but after the event listeners
         $order=Order::all()->first();
+        //Assert (Then)
         $this->assertTrue($order->status==='Admin Hold');
     }
 
@@ -133,13 +142,16 @@ class editOrder extends TestCase
      */
     public function test_admin_hold_materials()
     {
+        //Arrange
         $this->build_seeders();
         $order=$this->create_order();
+        //Act
         $orderMaterial=OrderMaterial::all()->first()->delete();
         //automatic status change
         $this->build_event_Listeners();
         //getting the same order but after the event listeners
         $order=Order::all()->first();
+        //Assert (Then)
         $this->assertTrue($order->status==='Admin Hold');
     }
 
@@ -151,9 +163,11 @@ class editOrder extends TestCase
      */
     public function test_production_pending()
     {
+        //Arrange
         //seeding everything needed
         $this->build_seeders();
         $order=$this->create_order();
+        //Act
         $initialCheck=Initial::factory()->create([
             'onderdek'=>'Brug',
             'order_id' => $order->id,
@@ -164,6 +178,7 @@ class editOrder extends TestCase
         $this->build_event_Listeners();
         //making sure we get the order after the event listeners were called
         $order=Order::all()->first();
+        //Assert (Then)
         //checking that the status is correct
         $this->assertTrue($order->status=='Production Pending');
     }
@@ -175,13 +190,16 @@ class editOrder extends TestCase
      */
     public function test_canceled()
     {
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
         $order=$this->create_order();
+        //Act
         //creating an order controller instance
         $orderController=new OrderController();
         $orderController::cancelOrder($order);
+        //Assert
         $this->assertTrue($order->status==='Canceled');
     }
 
@@ -192,16 +210,17 @@ class editOrder extends TestCase
      */
     public function test_canceled_route()
     {
-        //seeding everything needed
-        //orders are created with the "selected" as default on 0
+        //Arrange
         //seeding everything needed
         //orders are created with the "selected" as default on 0
         $this->build_seeders();
         $order=$this->create_order();
+        //Act
         //creating an order controller instance
         $orderController=new OrderController();
         $response=$orderController::cancelOrder($order);
         $result= $response->isRedirect('http://localhost/orders/'.$order->id);
+        //Assert (Then)
         $this->assertTrue($result);
     }
 

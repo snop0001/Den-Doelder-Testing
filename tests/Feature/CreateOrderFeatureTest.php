@@ -13,17 +13,13 @@ class CreateOrderFeatureTest extends TestCase
 {
     use RefreshDatabase;
     /**
-     * A basic feature test example.
+     * Tests that an order is created and stored
      *
      * @return void
      */
     public function test_create_order()
     {
-        //expecting an error of authentication (not using users)
-//        $this->expectException('Illuminate\Auth\AuthenticationException');
         $this->withoutMiddleware();
-
-//        Session::start();
         // Arrange
         $this->seed('PalletSeeder');
         $this->seed('MachineSeeder');
@@ -40,12 +36,10 @@ class CreateOrderFeatureTest extends TestCase
             'client_name' => '',
             'status' => 'Admin Hold',
         ];
-//        $this->withoutExceptionHandling();
-
         // Act
         $response = parent::post($route,$request);
 
-        // Then
+        // Assert (Then)
         $response->assertStatus(302);
         $response->assertSessionHasNoErrors();
 
@@ -56,21 +50,21 @@ class CreateOrderFeatureTest extends TestCase
     }
 
     /**
-     * A basic feature test example.
+     * Tests that an order is not created and stored if the data inserted is wrong
      *
      * @return void
      */
     public function test_create_order_with_error()
     {
-//        $this->expectException('Illuminate\Auth\AuthenticationException');
+        // Arrange
         $this->withoutMiddleware();
         Session::start();
-        // Arrange
         $this->seed('PalletSeeder');
         $this->seed('MachineSeeder');
         $route = route('orders.store');
         $request = [
             'order_number'=>'test_1',
+//             missing field to cause an error
 //            'pallet_id'=>Pallet::all()->first()->id,
             'machine_id'=>Machine::where('id',2)->first()->id,
             'quantity_production'=>100,
@@ -85,7 +79,7 @@ class CreateOrderFeatureTest extends TestCase
         // Act
         $response = $this->post($route,$request);
 
-        // Then
+        // Assert (Then)
         $response->assertSessionHasErrors(['pallet_id']);
         $this->assertDatabaseCount('orders', 0);
     }
