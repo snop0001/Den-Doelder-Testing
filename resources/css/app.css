@@ -1,0 +1,7 @@
+.list_no_bullets {
+    list-style-type: none; !important /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+}
+
+
